@@ -77,16 +77,23 @@ class PublisherModelBase(models.Model):
 
     @property
     def is_published(self):
-        if self.publisher_is_draft != self.STATE_PUBLISHED:
-            return False
+        return self.publisher_is_draft == self.STATE_PUBLISHED
 
-        if self.publication_end_date and self.publication_end_date <= timezone.now():
+    @property
+    def hidden_by_end_date(self):
+        if not self.publication_end_date:
             return False
+        return self.publication_end_date <= timezone.now()
 
-        if self.publication_start_date and self.publication_start_date >= timezone.now():
+    @property
+    def hidden_by_start_date(self):
+        if not self.publication_start_date:
             return False
+        return self.publication_start_date >= timezone.now()
 
-        return True
+    @property
+    def is_visible(self):
+        return self.is_published and (not self.hidden_by_end_date) and (not self.hidden_by_start_date)
 
     @property
     def is_dirty(self):
