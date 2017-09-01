@@ -316,3 +316,47 @@ class PublisherTest(test.TestCase):
         PublisherMiddleware.process_response(None, None)
 
         self.assertFalse(get_draft_status())
+        
+    def test_model_properties(self):
+        draft_obj = PublisherTestModel.publisher_manager.create(title="one")
+
+        self.assertEqual(draft_obj.is_draft, True)
+        self.assertEqual(draft_obj.is_published, False)
+        self.assertEqual(draft_obj.is_dirty, True)
+
+        publish_obj = draft_obj.publish()
+
+        self.assertEqual(publish_obj.title, "one")
+        self.assertEqual(publish_obj.is_draft, False)
+        self.assertEqual(publish_obj.is_published, True)
+        self.assertEqual(publish_obj.is_dirty, False)
+
+        self.assertEqual(draft_obj.title, "one")
+        self.assertEqual(draft_obj.is_draft, True)
+        self.assertEqual(draft_obj.is_published, False) # FIXME: Should this not be True ?!?
+        self.assertEqual(draft_obj.is_dirty, False)
+
+        draft_obj.title="two"
+        draft_obj.save()
+
+        self.assertEqual(publish_obj.title, "one")
+        self.assertEqual(publish_obj.is_draft, False)
+        self.assertEqual(publish_obj.is_published, True)
+        self.assertEqual(publish_obj.is_dirty, False) # FIXME: Should this not be True ?!?
+
+        self.assertEqual(draft_obj.title, "two")
+        self.assertEqual(draft_obj.is_draft, True)
+        self.assertEqual(draft_obj.is_published, False) # FIXME: Should this not be True ?!?
+        self.assertEqual(draft_obj.is_dirty, True)
+
+        publish_obj = draft_obj.publish()
+
+        self.assertEqual(publish_obj.title, "two")
+        self.assertEqual(publish_obj.is_draft, False)
+        self.assertEqual(publish_obj.is_published, True)
+        self.assertEqual(publish_obj.is_dirty, False)
+
+        self.assertEqual(draft_obj.title, "two")
+        self.assertEqual(draft_obj.is_draft, True)
+        self.assertEqual(draft_obj.is_published, False) # FIXME: Should this not be True ?!?
+        self.assertEqual(draft_obj.is_dirty, False)
