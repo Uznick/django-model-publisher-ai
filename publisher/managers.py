@@ -27,10 +27,7 @@ class PublisherQuerySet(models.QuerySet):
         """
         from .models import PublisherModelBase
         return self.filter(
-            Q(publication_start_date__isnull=True) | Q(publication_start_date__lte=timezone.now()),
-            Q(publication_end_date__isnull=True) | Q(publication_end_date__gt=timezone.now()),
-            publisher_is_draft=PublisherModelBase.STATE_PUBLISHED,
-        )
+            publisher_is_draft=PublisherModelBase.STATE_PUBLISHED)
 
 
 class BasePublisherManager(models.Manager):

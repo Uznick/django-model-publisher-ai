@@ -1,6 +1,8 @@
-from django.core.management.base import BaseCommand
-from django.db.models import get_models, get_app
+# -*- coding: utf-8 -*-
+from django.apps import apps as django_apps
 from django.contrib.auth.management import create_permissions
+from django.core.management.base import BaseCommand
+
 
 
 class Command(BaseCommand):
@@ -8,13 +10,12 @@ class Command(BaseCommand):
     help = 'reloads permissions for specified apps, or all apps if no args are specified'
 
     def handle(self, *args, **options):
+        apps = set()
         if not args:
-            apps = []
-            for model in get_models():
-                apps.append(get_app(model._meta.app_label))
+            apps = django_apps.get_app_configs()
         else:
-            apps = []
             for arg in args:
-                apps.append(get_app(arg))
+                apps.add(django_apps.get_app_config(arg))
+
         for app in apps:
-            create_permissions(app, get_models(), int(options.get('verbosity', 0)))
+            create_permissions(app, int(options.get('verbosity', 3)))
