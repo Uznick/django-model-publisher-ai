@@ -10,12 +10,12 @@ class PublisherViewMixin(object):
 
     def get_queryset(self):
         qs = self.model.objects.visible()
-
-        ordering = self.get_ordering()
-        if ordering:
-            if isinstance(ordering, six.string_types):
-                ordering = (ordering,)
-            qs = qs.order_by(*ordering)
+        if hasattr(self, 'get_ordering'):
+            ordering = self.get_ordering()
+            if ordering:
+                if isinstance(ordering, six.string_types):
+                    ordering = (ordering,)
+                qs = qs.order_by(*ordering)
 
         return qs
 
