@@ -92,9 +92,10 @@ class PublisherModelBase(models.Model):
         # Get all placeholders + their plugins to find their modified date
         for placeholder_field in self.get_placeholder_fields():
             placeholder = getattr(self, placeholder_field)
-            for plugin in placeholder.get_plugins_list():
-                if plugin.changed_date > self.publisher_linked.publisher_modified_at:
-                    return True
+            if placeholder:
+                for plugin in placeholder.get_plugins_list():
+                    if plugin.changed_date > self.publisher_linked.publisher_modified_at:
+                        return True
 
         return False
 
@@ -171,6 +172,9 @@ class PublisherModelBase(models.Model):
         for field in self.get_placeholder_fields(draft_obj):
             draft_placeholder = getattr(draft_obj, field)
             published_placeholder = getattr(published_obj, field)
+
+            if not published_placeholder:
+                continue
 
             if draft_placeholder.pk == published_placeholder.pk:
                 published_placeholder.pk = None
