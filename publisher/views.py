@@ -19,8 +19,9 @@ class PublisherViewMixin(object):
         if self.request.user.is_superuser:
             return True
 
-        if self.request.user.has_perm(self.perm):
-            return True
+        if hasattr(self, 'perm') and self.perm:
+            if self.request.user.has_perm(self.perm):
+                return True
 
         return False
 
