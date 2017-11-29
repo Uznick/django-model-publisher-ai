@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models import Q
-from django.utils import timezone
 
 from .signals import publisher_pre_delete
 from .middleware import get_draft_status
@@ -35,6 +33,9 @@ class BasePublisherManager(models.Manager):
         return PublisherQuerySet(self.model, using=self._db)
 
     def contribute_to_class(self, model, name):
+        # Stopped working in current versions of Django,
+        # connect manually for all models you need
+        # https://code.djangoproject.com/ticket/27350
         super(BasePublisherManager, self).contribute_to_class(model, name)
         models.signals.pre_delete.connect(publisher_pre_delete, model)
 

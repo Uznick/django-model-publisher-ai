@@ -192,11 +192,6 @@ class PublisherModelBase(models.Model):
         self.save()
         publisher_post_unpublish.send(sender=self.__class__, instance=self)
 
-    def delete(self, using=None, keep_parents=False):
-        if self.publisher_linked:
-            self.publisher_linked.delete()
-        return super().delete(using, keep_parents)
-
     @assert_draft
     def revert_to_public(self):
         """
