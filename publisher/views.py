@@ -45,5 +45,16 @@ class PublisherDetailView(PublisherViewMixin, DetailView):
     pass
 
 
+class PublisherByOriginalPKDetailView(PublisherViewMixin, DetailView):
+    def get_object(self, queryset=None):
+        _obj = self.model.objects.get(pk=self.kwargs.get(self.pk_url_kwarg))
+
+        self.kwargs[self.pk_url_kwarg] = _obj.publisher_linked.pk
+
+        obj = super().get_object(queryset)
+
+        return obj
+
+
 class PublisherListView(PublisherViewMixin, ListView):
     pass

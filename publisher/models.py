@@ -299,6 +299,12 @@ class PublisherModelBase(models.Model):
 
         super(PublisherModelBase, self).save(**kwargs)
 
+    @property
+    def persistent_pk(self):
+        if self.publisher_draft:
+            return self.publisher_draft.pk
+        return self.pk
+
 
 class PublisherModel(PublisherModelBase):
     objects = PublisherManager()
