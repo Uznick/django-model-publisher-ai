@@ -54,7 +54,10 @@ class PublisherByOriginalPKDetailView(PublisherViewMixin, DetailView):
         _obj = self.model.objects.get(pk=self.kwargs.get(self.pk_url_kwarg))
 
         if 'edit' in self.request.GET and self._has_perms():
-            self.kwargs[self.pk_url_kwarg] = _obj.publisher_draft.pk
+            if _obj.publisher_draft:
+                self.kwargs[self.pk_url_kwarg] = _obj.publisher_draft.pk
+            else:
+                self.kwargs[self.pk_url_kwarg] = _obj.pk
         else:
             if not _obj.publisher_linked:
                 raise Http404
