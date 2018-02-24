@@ -1,4 +1,5 @@
 import six
+from django.http import Http404
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
@@ -46,10 +47,18 @@ class PublisherDetailView(PublisherViewMixin, DetailView):
 
 
 class PublisherByOriginalPKDetailView(PublisherViewMixin, DetailView):
+    def _has_perms(self):
+        return True
+
     def get_object(self, queryset=None):
         _obj = self.model.objects.get(pk=self.kwargs.get(self.pk_url_kwarg))
 
-        self.kwargs[self.pk_url_kwarg] = _obj.publisher_linked.pk
+        if 'edit' in self.request.GET and self._has_perms():
+            self.kwargs[self.pk_url_kwarg] = _obj.publisher_draft.pk
+        else:
+            if not _obj.publisher_linked:
+                raise Http404
+            self.kwargs[self.pk_url_kwarg] = _obj.publisher_linked.pk
 
         obj = super().get_object(queryset)
 

@@ -301,8 +301,10 @@ class PublisherModelBase(models.Model):
 
     @property
     def persistent_pk(self):
-        if self.publisher_draft:
+        if hasattr(self, 'publisher_draft') and self.publisher_draft:
             return self.publisher_draft.pk
+        if self.publisher_linked:
+            return self.publisher_linked.pk
         return self.pk
 
 
