@@ -54,7 +54,7 @@ class PublisherByOriginalPKDetailView(PublisherViewMixin, DetailView):
         _obj = self.model.objects.get(pk=self.kwargs.get(self.pk_url_kwarg))
 
         if 'edit' in self.request.GET and self._has_perms():
-            if _obj.publisher_draft:
+            if hasattr(_obj, 'publisher_draft') and _obj.publisher_draft:
                 self.kwargs[self.pk_url_kwarg] = _obj.publisher_draft.pk
             else:
                 self.kwargs[self.pk_url_kwarg] = _obj.pk
